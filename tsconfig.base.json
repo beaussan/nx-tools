@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@beaussan/nx-knip": ["packages/nx-knip/src/index.ts"]}
+      "@beaussan/nx-knip": ["packages/nx-knip/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
