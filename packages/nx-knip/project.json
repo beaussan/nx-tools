@@ -1,0 +1,19 @@
+{
+  "name": "nx-knip",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/nx-knip/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/nx-knip",
+        "main": "packages/nx-knip/src/index.ts",
+        "tsConfig": "packages/nx-knip/tsconfig.lib.json",
+        "assets": ["packages/nx-knip/*.md"]
+      }
+    }
+  },
+  "tags": []
+}
