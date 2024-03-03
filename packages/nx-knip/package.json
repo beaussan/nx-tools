@@ -1,6 +1,6 @@
 {
   "name": "@beaussan/nx-knip",
-  "version": "0.0.1",
+  "version": "0.0.2-0",
   "devDependencies": {
     "knip": "^5.0.2"
   },
