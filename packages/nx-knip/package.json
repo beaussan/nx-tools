@@ -1,6 +1,6 @@
 {
   "name": "@beaussan/nx-knip",
-  "version": "0.0.2-2",
+  "version": "0.0.3-0",
   "devDependencies": {
     "knip": "^5.0.2"
   },
@@ -11,6 +11,9 @@
   "peerDependencies": {
     "@nx/devkit": "18 || 17",
     "knip": "5"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "private": false,
   "type": "commonjs",
