@@ -1,0 +1,12 @@
+{
+  "name": "@nx-tools/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@nx/js": "18.0.6",
+    "@nx/workspace": "18.0.6",
+    "nx": "18.0.6"
+  },
+  "packageManager": "yarn@4.1.0"
+}
