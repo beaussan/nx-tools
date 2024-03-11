@@ -14,7 +14,27 @@
     ],
     "sharedGlobals": []
   },
+  "release": {
+    "projects": ["packages/*"],
+    "git": {
+      "commit": false,
+      "stageChanges": false,
+      "tag": true
+    },
+    "version": {
+      "generatorOptions": {
+        "currentVersionResolver": "git-tag",
+        "fallbackCurrentVersionResolver": "disk",
+        "packageRoot": "dist/packages/{projectName}"
+      }
+    }
+  },
   "targetDefaults": {
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/packages/{projectName}"
+      }
+    },
     "@nx/rollup:rollup": {
       "cache": true,
       "dependsOn": ["^build"],

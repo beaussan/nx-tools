@@ -49,7 +49,7 @@ export const withLocalNxPlugins = ({
       }
 
       return {
-        entry: entry,
+        entry: entry.map((it) => it + '!'),
       };
     },
   });
@@ -67,7 +67,7 @@ export const withEsbuildApps = () =>
         return undefined;
       }
       return {
-        entry: [main],
+        entry: [main + '!'],
       };
     },
   });
@@ -83,25 +83,25 @@ export const withNextJs = () =>
       return {
         next: {
           entry: [
-            `${rootFolder}/next.config.{js,ts,cjs,mjs}`,
-            `${rootFolder}/index.d.ts`,
-            `${rootFolder}/next-env.d.ts`,
-            `${rootFolder}/middleware.{js,ts}`,
-            `${rootFolder}/app/**/route.{js,ts}`,
-            `${rootFolder}/app/**/{error,layout,loading,not-found,page,template}.{js,jsx,ts,tsx}`,
-            `${rootFolder}/instrumentation.{js,ts}`,
-            `${rootFolder}/app/{manifest,sitemap,robots}.{js,ts}`,
-            `${rootFolder}/app/**/{icon,apple-icon}.{js,ts,tsx}`,
-            `${rootFolder}/app/**/{opengraph,twitter}-image.{js,ts,tsx}`,
-            `${rootFolder}/pages/**/*.{js,jsx,ts,tsx}`,
-            `${rootFolder}/src/middleware.{js,ts}`,
-            `${rootFolder}/src/app/**/route.{js,ts}`,
-            `${rootFolder}/src/app/**/{error,layout,loading,not-found,page,template}.{js,jsx,ts,tsx}`,
-            `${rootFolder}/src/instrumentation.{js,ts}`,
-            `${rootFolder}/src/app/{manifest,sitemap,robots}.{js,ts}`,
-            `${rootFolder}/src/app/**/{icon,apple-icon}.{js,ts,tsx}`,
-            `${rootFolder}/src/app/**/{opengraph,twitter}-image.{js,ts,tsx}`,
-            `${rootFolder}/src/pages/**/*.{js,jsx,ts,tsx}`,
+            `${rootFolder}/next.config.{js,ts,cjs,mjs}!`,
+            `${rootFolder}/index.d.ts!`,
+            `${rootFolder}/next-env.d.ts!`,
+            `${rootFolder}/middleware.{js,ts}!`,
+            `${rootFolder}/app/**/route.{js,ts}!`,
+            `${rootFolder}/app/**/{error,layout,loading,not-found,page,template}.{js,jsx,ts,tsx}!`,
+            `${rootFolder}/instrumentation.{js,ts}!`,
+            `${rootFolder}/app/{manifest,sitemap,robots}.{js,ts}!`,
+            `${rootFolder}/app/**/{icon,apple-icon}.{js,ts,tsx}!`,
+            `${rootFolder}/app/**/{opengraph,twitter}-image.{js,ts,tsx}!`,
+            `${rootFolder}/pages/**/*.{js,jsx,ts,tsx}!`,
+            `${rootFolder}/src/middleware.{js,ts}!`,
+            `${rootFolder}/src/app/**/route.{js,ts}!`,
+            `${rootFolder}/src/app/**/{error,layout,loading,not-found,page,template}.{js,jsx,ts,tsx}!`,
+            `${rootFolder}/src/instrumentation.{js,ts}!`,
+            `${rootFolder}/src/app/{manifest,sitemap,robots}.{js,ts}!`,
+            `${rootFolder}/src/app/**/{icon,apple-icon}.{js,ts,tsx}!`,
+            `${rootFolder}/src/app/**/{opengraph,twitter}-image.{js,ts,tsx}!`,
+            `${rootFolder}/src/pages/**/*.{js,jsx,ts,tsx}!`,
           ],
         },
       };
@@ -144,22 +144,31 @@ const withVitestNxCrystal = () =>
           config: [
             rootFolder + '/vitest*.config.{js,mjs,ts,cjs,mts,cts}',
             rootFolder + '/vite*.config.{js,mjs,ts,cjs,mts,cts}',
+            'vitest.workspace.{js,mjs,ts,cjs,mts,cts}',
           ],
           entry: [rootFolder + '/**/*.{test,test-d,spec}.?(c|m)[jt]s?(x)'],
         },
       };
     },
   });
+
 const withVitestNxExecutor = () =>
   withMapOverExecutorByName({
-    executorName: '@nx/vite:vitest',
-    mapperFn: ({ rootFolder }) => {
-      return {
-        vitest: {
-          config: [
+    executorName: '@nx/vite:test',
+    mapperFn: ({ rootFolder, targetContent }) => {
+      const configs = targetContent?.options?.config
+        ? [
+            targetContent?.options?.config,
+            'vitest.workspace.{js,mjs,ts,cjs,mts,cts}',
+          ]
+        : [
             rootFolder + '/vitest*.config.{js,mjs,ts,cjs,mts,cts}',
             rootFolder + '/vite*.config.{js,mjs,ts,cjs,mts,cts}',
-          ],
+            'vitest.workspace.{js,mjs,ts,cjs,mts,cts}',
+          ];
+      return {
+        vitest: {
+          config: configs,
           entry: [rootFolder + '/**/*.{test,test-d,spec}.?(c|m)[jt]s?(x)'],
         },
       };
@@ -173,7 +182,7 @@ export const withNxStandards = (): KnipConfigPlugin => () => {
   return {
     project: ['**/*.{ts,js,tsx,jsx}'],
     ignore: ['tmp/**', 'node_modules/**'],
-    ignoreDependencies: ['prettier', '@nx/workspace', '@nx/web'],
+    ignoreDependencies: ['prettier'],
     eslint: {
       config: ['**/.eslintrc.{json,js}', '.eslintrc.{json,js}'],
     },
@@ -215,3 +224,40 @@ export const withNxStandards = (): KnipConfigPlugin => () => {
     },
   };
 };
+
+/** @public */
+export const withEslint = () =>
+  withMapOverExecutorByName({
+    executorName: '@nx/linter:eslint',
+    mapperFn: ({ rootFolder, targetContent }) => {
+      const entry = targetContent?.options?.eslintConfig
+        ? [targetContent.options.eslintConfig]
+        : [rootFolder + '/.eslintrc.{json,js}', '.eslintrc.{json,js}'];
+      return {
+        eslint: {
+          config: entry,
+        },
+      };
+    },
+  });
+
+/** @public */
+export const withEsbuildPublishableLibs = () =>
+  withLibraryMapper({
+    filter: (project) =>
+      project.type === 'lib' &&
+      project.data &&
+      !!project.data.targets &&
+      !!project.data.targets['publish'] &&
+      project.data.targets['build'] &&
+      project.data.targets['build'].executor === '@nx/esbuild:esbuild',
+    mapperFn: ({ project }) => {
+      const main = project?.data?.targets?.['build']?.options?.main;
+      if (!main) {
+        return undefined;
+      }
+      return {
+        entry: [main + '!'],
+      };
+    },
+  });

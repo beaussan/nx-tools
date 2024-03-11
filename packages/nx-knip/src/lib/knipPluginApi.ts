@@ -3,7 +3,7 @@ import { createProjectGraphAsync, ProjectGraphProjectNode } from '@nx/devkit';
 import { mergeKnipConfigs } from './utils/mergeKnipConfigs';
 import { log } from './utils/log';
 
-const DEBUG = true;
+const DEBUG = process.env['DEBUG'] === 'true' || process.env['DEBUG'] === '1';
 
 /** @public */
 export type KnipConfigPluginOptions = {
